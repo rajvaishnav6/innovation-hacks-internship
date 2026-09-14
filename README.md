@@ -1,82 +1,54 @@
-# DevBoard — Developer Productivity Dashboard
+# Innovation Hacks — Full Stack Development Internship
 
-A responsive, production-style developer productivity dashboard built for **Task 1** of the Innovation Hacks Full Stack Development Internship. This is the frontend of a project + task management tool — the same dashboard that will later be wired up to a real REST API (Task 2) and database (Task 3), and grown into a full AI-powered platform (Task 4).
+One connected project, built over four weeks, for the Innovation Hacks Full Stack Development Internship.
 
-> Built with React (Next.js), Tailwind CSS, and mock data that simulates real network requests — including loading, empty, and error states.
+| Week | Task | Folder | Status |
+|---|---|---|---|
+| 1 | Developer Productivity Dashboard (Frontend) | `frontend/` | ✅ Built |
+| 2 | Users, Projects & Tasks REST API | `backend/` | ✅ Built — in-memory data for now |
+| 3 | Persistent Data Layer (Database) | `backend/` | 🚧 Next — connects a real database |
+| 4 | AI-Powered Project & Task Management Platform | `frontend/` + `backend/` | 🔜 Combines everything, deployed |
 
-## ✨ Features
+## How this repo works
 
-- **Dashboard home** with a welcome header, key stats (projects, tasks in progress/completed/overdue), recent projects, and upcoming tasks
-- **Projects page** with search, status filter, and a "New Project" form (client-side only for now)
-- **Tasks page** with a To Do / In Progress / Done board, search, priority filter, and a "New Task" form — click any task card to move it to the next status
-- **Profile page** showing the logged-in user's details and quick stats
-- Fully **responsive** layout (mobile, tablet, desktop) with a collapsible sidebar on small screens
-- **Loading skeletons**, **empty states**, and a genuine **error state** (use the "Simulate error" button on the Dashboard, Projects, or Tasks page) on every data-driven view
-- Clean, reusable component architecture (`components/ui`, `components/dashboard`, `components/layout`)
+This is **one connected build**, not four separate projects — matching how the task guide describes the internship:
 
-## 🛠️ Tech Stack
+- **`frontend/`** is the Next.js dashboard from Task 1. It currently runs on mock data. In Task 4, the mock functions inside `frontend/lib/api.js` get swapped for real `fetch()` calls to the backend below — no other frontend code needs to change.
+- **`backend/`** is the Express API skeleton. Task 2 fills in the controllers with real CRUD logic, Task 3 connects a real database, Task 4 adds authentication and an AI-powered endpoint.
 
-- [Next.js 14](https://nextjs.org/) (App Router) + React 18
-- [Tailwind CSS](https://tailwindcss.com/) for styling
-- [lucide-react](https://lucide.dev/) for icons
-- Plain JavaScript, no backend calls yet (see "What's mock and what's real" below)
+Each week, you build on the same repo instead of starting fresh — commit your progress and submit the same GitHub link each week, so the commit history itself shows the build growing task by task.
 
-## 📂 Project Structure
+## Quick Start
 
-```
-frontend/
-├── app/                     # Next.js App Router pages
-│   ├── page.js              # Dashboard (home)
-│   ├── projects/page.js     # Projects page
-│   ├── tasks/page.js        # Tasks page
-│   └── profile/page.js      # Profile page
-├── components/
-│   ├── layout/               # Sidebar, Navbar, AppShell
-│   ├── dashboard/             # StatCard, ProjectCard, TaskCard, New Project/Task modals
-│   └── ui/                    # SearchInput, FilterSelect, Badge, EmptyState, ErrorState, Skeleton, Avatar, ProgressBar
-├── data/mockData.js           # Mock user, projects, and tasks
-├── lib/api.js                  # Mock "API" layer (easy to swap for real fetch calls later)
-├── lib/utils.js                 # Small helpers (dates, classnames, avatar colors)
-└── hooks/useAsync.js             # Loading/success/error hook used by every page
-```
-
-## 🚀 Getting Started
-
+**Frontend (Task 1 — ready now):**
 ```bash
+cd frontend
 npm install
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000). No environment variables or database are needed for this task — see `.env.example` for what's coming later.
+Open http://localhost:3000
 
-## 🔌 What's mock and what's real
+**Backend (Task 2/3 skeleton — ready now, business logic comes Week 2):**
+```bash
+cd backend
+npm install
+npm run dev
+```
+Runs at http://localhost:5000 — try `GET /api/health`
 
-This task is **frontend-only**, so `lib/api.js` returns mock data from `data/mockData.js` after a short simulated delay (so the loading states are actually visible). Every page talks to `lib/api.js` through the `useAsync` hook — never directly to the mock data — so in Task 2/3 you can swap the inside of `lib/api.js` for real `fetch()` calls to your own backend without touching a single page or component.
+## Roadmap
 
-## 🎨 Design notes
+**Week 1 — Task 1 (done):** Dashboard, Projects, Tasks, and Profile pages with search, filters, responsive layout, and loading/empty/error states — all built on mock data in `frontend/`.
 
-The sidebar leans into a dark, terminal-inspired look (monospace nav labels, a blinking cursor next to the logo) since this is a *developer's* productivity tool — while the main content area stays light and clean so dense information (stat cards, project grids) stays easy to scan. Monospace type is used for data-like content (stats, badges, dates, counts); everything conversational (greetings, descriptions, form labels) stays in the system sans font.
+**Week 2 — Task 2 (done):** Real CRUD logic, validation, centralized error handling, and correct status codes are implemented in `backend/src/controllers/*.js`, backed by an in-memory store (`backend/src/data/`) since there's no database yet. A Postman collection (`backend/postman_collection.json`) documents every endpoint.
 
-## 🖼️ Screenshots
+**Week 3 — Task 3 (next):** Connect a real database in `backend/src/config/db.js` and define schemas in `backend/src/models/*.js`. The controllers already call `findAll` / `findById` / `create` / `update` / `remove` — Task 3 is mostly about making those calls hit a real database instead of the in-memory store. Once the API returns real, persisted data, swap `frontend/lib/api.js`'s mock calls for real `fetch()` calls to `http://localhost:5000/api/...`.
 
-> Add 2–3 screenshots here after running the app locally (dashboard, projects page, tasks board, mobile view). Save them into a `screenshots/` folder and reference them like:
-> `![Dashboard](screenshots/dashboard.png)`
+**Week 4 — Task 4:** Add authentication (register/login/protected routes), pick one AI feature from the task guide, and deploy both `frontend/` and `backend/` (Vercel for the frontend, Render/Railway for the backend are good free options).
 
-## 🎥 Demo Video
+## Why Node.js + Express + MongoDB for the backend?
 
-> Add your demo video link here after recording it (Loom, an unlisted YouTube video, or Google Drive all work).
-
-## 📌 Notes for Submission
-
-- GitHub repo ✅ (this one)
-- Demo video — record a 2–5 min walkthrough: dashboard, projects, tasks board, a mobile-width view, and the loading/empty/error states
-- LinkedIn post — tag Innovation Hacks and include your demo video
-- Live deployment (optional) — this deploys cleanly to [Vercel](https://vercel.com/) with zero configuration
-
-## 💡 Ideas to Extend (optional, for extra polish)
-
-- Add a dark mode toggle
-- Persist locally-created projects/tasks with `localStorage` until Task 2's API is ready
-- Add unit tests with Jest + React Testing Library
+The task guide allows Node+Express, Python+FastAPI, or Python+Flask, and MongoDB, MySQL, or PostgreSQL. This scaffold picks Node+Express+MongoDB because it keeps the whole stack in one language (JavaScript, matching the frontend) and a document-shaped Project → Tasks relationship maps naturally onto MongoDB. If you'd rather use Python or a SQL database, that's a fine choice too — just say so before Week 2 and the backend folder can be restructured.
 
 ---
-Built for the **Innovation Hacks Full Stack Development Internship** — Build. Innovate. Impact.
+Built for the Innovation Hacks Full Stack Development Internship — Build. Innovate. Impact.
