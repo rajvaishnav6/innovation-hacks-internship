@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/tasks/t1"
+method: DELETE
+order: 7000

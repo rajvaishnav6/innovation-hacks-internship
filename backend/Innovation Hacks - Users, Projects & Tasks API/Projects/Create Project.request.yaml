@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/projects"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "name": "New Landing Page",
+      "description": "A fresh landing page for the product launch.",
+      "status": "Planning",
+      "dueDate": "2026-10-15"
+    }
+order: 4000

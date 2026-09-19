@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/projects/p1"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "status": "In Progress"
+    }
+order: 5000

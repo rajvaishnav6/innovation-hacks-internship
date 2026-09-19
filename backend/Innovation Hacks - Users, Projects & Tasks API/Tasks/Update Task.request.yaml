@@ -1,0 +1,12 @@
+$kind: http-request
+url: "{{baseUrl}}/tasks/t1"
+method: PUT
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "priority": "High"
+    }
+order: 5000

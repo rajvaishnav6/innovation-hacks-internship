@@ -1,0 +1,15 @@
+$kind: http-request
+url: "{{baseUrl}}/tasks"
+method: POST
+headers:
+  Content-Type: application/json
+body:
+  type: text
+  content: |-
+    {
+      "title": "Write onboarding docs",
+      "projectId": "p1",
+      "priority": "Medium",
+      "dueDate": "2026-09-20"
+    }
+order: 4000

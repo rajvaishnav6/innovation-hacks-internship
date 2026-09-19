@@ -1,0 +1,4 @@
+$kind: http-request
+url: "{{baseUrl}}/projects?status=In%20Progress"
+method: GET
+order: 2000
