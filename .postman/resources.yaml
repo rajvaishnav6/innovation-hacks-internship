@@ -1,0 +1,7 @@
+# Use this workspace to collaborate
+workspace:
+  id: 5e8b2741-42f0-44e3-8de4-476367372543
+
+localResources:
+  collections:
+    - ../backend/Innovation Hacks - Users, Projects & Tasks API

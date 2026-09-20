@@ -12,6 +12,10 @@ const aiRoutes = require('./routes/aiRoutes');
 
 const app = express();
 
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+
 const allowedOrigins = [
   'https://innovation-hacks-internship.vercel.app',
   'https://innovation-hacks-internship-1ditab4br-raj-vaishnav.vercel.app'
