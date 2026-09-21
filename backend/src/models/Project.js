@@ -1,21 +1,21 @@
-// TASK 3 TODO: define the Mongoose schema for a Project here.
-// Suggested fields: name, description, status, dueDate, owner (ref to User).
-//
-//   const mongoose = require('mongoose');
-//   const projectSchema = new mongoose.Schema({ ... }, { timestamps: true });
-//   module.exports = mongoose.model('Project', projectSchema);
-
 const { pool } = require('../config/db');
 
 const COLUMNS = `id, name, description, status, due_date AS "dueDate", owner_id AS "ownerId",
                  created_at AS "createdAt", updated_at AS "updatedAt"`;
 
-async function findAll(status) {
-  if (status) {
-    const result = await pool.query(`SELECT ${COLUMNS} FROM projects WHERE status = $1 ORDER BY id`, [status]);
-    return result.rows;
+async function findAll(status, ownerId) {
+  const conditions = [];
+  const values = [];
+  if (ownerId) {
+    values.push(ownerId);
+    conditions.push(`owner_id = $${values.length}`);
   }
-  const result = await pool.query(`SELECT ${COLUMNS} FROM projects ORDER BY id`);
+  if (status) {
+    values.push(status);
+    conditions.push(`status = $${values.length}`);
+  }
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  const result = await pool.query(`SELECT ${COLUMNS} FROM projects ${where} ORDER BY id`, values);
   return result.rows;
 }
 
