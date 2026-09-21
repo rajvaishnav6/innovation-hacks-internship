@@ -18,7 +18,8 @@ app.use(express.urlencoded({ extended: true }));
 
 const allowedOrigins = [
   'https://innovation-hacks-internship.vercel.app',
-  'https://innovation-hacks-internship-1ditab4br-raj-vaishnav.vercel.app'
+  'https://innovation-hacks-internship-1ditab4br-raj-vaishnav.vercel.app',
+  'http://localhost:3000'
 ];
 
 app.use(
