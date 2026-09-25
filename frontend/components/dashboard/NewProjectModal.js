@@ -6,16 +6,26 @@ import { X } from 'lucide-react';
 const STATUS_OPTIONS = ['Planning', 'In Progress', 'Completed', 'On Hold'];
 const EMPTY_FORM = { name: '', description: '', status: 'Planning', dueDate: '' };
 
-export default function NewProjectModal({ open, onClose, onCreate, loading = false, error = '' }) {
+export default function NewProjectModal({ open, onClose, onSave, loading = false, error = '', project = null }) {
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState({});
+  const isEdit = !!project;
 
   useEffect(() => {
     if (open) {
-      setForm(EMPTY_FORM);
+      setForm(
+        project
+          ? {
+              name: project.name || '',
+              description: project.description || '',
+              status: project.status || 'Planning',
+              dueDate: project.dueDate ? String(project.dueDate).slice(0, 10) : '',
+            }
+          : EMPTY_FORM
+      );
       setErrors({});
     }
-  }, [open]);
+  }, [open, project]);
 
   if (!open) return null;
 
@@ -30,14 +40,16 @@ export default function NewProjectModal({ open, onClose, onCreate, loading = fal
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
-    onCreate(form);
+    onSave(form);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40">
       <div className="w-full max-w-md p-6 bg-white shadow-xl rounded-xl">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="font-mono text-lg font-semibold text-slate-800">new project</h3>
+          <h3 className="font-mono text-lg font-semibold text-slate-800">
+            {isEdit ? 'edit project' : 'new project'}
+          </h3>
           <button onClick={onClose} className="text-slate-400 hover:text-slate-600" aria-label="Close">
             <X className="w-5 h-5" />
           </button>
@@ -113,7 +125,7 @@ export default function NewProjectModal({ open, onClose, onCreate, loading = fal
               disabled={loading}
               className="px-4 py-2 text-sm font-medium text-white rounded-lg bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50"
             >
-              {loading ? 'Creating...' : 'Create Project'}
+              {loading ? 'Saving...' : isEdit ? 'Save Changes' : 'Create Project'}
             </button>
           </div>
         </form>

@@ -1,16 +1,27 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Menu, Bell, LogOut } from 'lucide-react';
 import Avatar from '@/components/ui/Avatar';
 import { useAuth } from '@/context/AuthContext';
+import { getTasks } from '@/lib/api';
+import { isOverdue, formatDate } from '@/lib/utils';
 
 export default function Navbar({ onMenuClick }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [overdueTasks, setOverdueTasks] = useState([]);
   const { user, logout } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!user) return;
+    getTasks()
+      .then((tasks) => setOverdueTasks(tasks.filter((t) => isOverdue(t.dueDate, t.status))))
+      .catch(() => setOverdueTasks([]));
+  }, [user]);
 
   if (!user) return null;
 
@@ -31,10 +42,49 @@ export default function Navbar({ onMenuClick }) {
       <div className="hidden lg:block" />
 
       <div className="flex items-center gap-3">
-        <button className="relative p-2 rounded-lg text-slate-500 hover:bg-slate-50" aria-label="Notifications">
-          <Bell className="w-5 h-5" />
-          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500" />
-        </button>
+        <div className="relative">
+          <button
+            onClick={() => setNotifOpen((v) => !v)}
+            className="relative p-2 rounded-lg text-slate-500 hover:bg-slate-50"
+            aria-label="Notifications"
+          >
+            <Bell className="w-5 h-5" />
+            {overdueTasks.length > 0 && (
+              <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-rose-500" />
+            )}
+          </button>
+
+          {notifOpen && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setNotifOpen(false)} />
+              <div className="absolute right-0 z-20 p-2 mt-2 bg-white border shadow-lg w-72 rounded-xl border-slate-100">
+                <p className="px-3 py-2 text-xs font-semibold tracking-wide uppercase text-slate-400">
+                  Overdue tasks
+                </p>
+                {overdueTasks.length === 0 ? (
+                  <p className="px-3 py-4 text-sm text-center text-slate-400">You&apos;re all caught up!</p>
+                ) : (
+                  <div className="space-y-1 overflow-y-auto max-h-64">
+                    {overdueTasks.map((task) => (
+                      <div key={task.id} className="px-3 py-2 rounded-lg hover:bg-slate-50">
+                        <p className="text-sm font-medium truncate text-slate-700">{task.title}</p>
+                        <p className="text-xs text-rose-500">was due {formatDate(task.dueDate)}</p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                <div className="h-px my-1 bg-slate-100" />
+                <Link
+                  href="/tasks"
+                  onClick={() => setNotifOpen(false)}
+                  className="block px-3 py-2 text-sm font-medium text-center rounded-lg text-cyan-600 hover:bg-cyan-50"
+                >
+                  View all tasks
+                </Link>
+              </div>
+            </>
+          )}
+        </div>
 
         <div className="relative">
           <button

@@ -20,6 +20,16 @@ function validateUserUpdate(req, res, next) {
   next();
 }
 
+function validateUpdateMe(req, res, next) {
+  const { name, email, bio } = req.body;
+  const errors = [];
+  if (name !== undefined && !isNonEmptyString(name)) errors.push('name must be a non-empty string.');
+  if (email !== undefined && !isValidEmail(email)) errors.push('email must be a valid email address.');
+  if (bio !== undefined && typeof bio !== 'string') errors.push('bio must be text.');
+  if (errors.length) return fail(next, errors);
+  next();
+}
+
 function validateProjectCreate(req, res, next) {
   const { name, status, dueDate } = req.body;
   const errors = [];
@@ -52,7 +62,7 @@ function validateTaskCreate(req, res, next) {
   const { title, projectId, status, priority, dueDate } = req.body;
   const errors = [];
   if (!isNonEmptyString(title)) errors.push('title is required and must be a non-empty string.');
-  if (!isNonEmptyString(projectId) && typeof projectId !== 'number') errors.push('projectId is required.');
+  if (!projectId) errors.push('projectId is required.');
   if (status !== undefined && !isOneOf(status, TASK_STATUSES)) {
     errors.push(`status must be one of: ${TASK_STATUSES.join(', ')}.`);
   }
@@ -114,6 +124,7 @@ function validateLogin(req, res, next) {
 
 module.exports = {
   validateUserUpdate,
+  validateUpdateMe,
   validateProjectCreate,
   validateProjectUpdate,
   validateTaskCreate,

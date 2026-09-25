@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { Plus } from 'lucide-react';
 import { useAsync } from '@/hooks/useAsync';
-import { getProjects, getTasks, createProject } from '@/lib/api';
+import { getProjects, getTasks, createProject, updateProject, deleteProject } from '@/lib/api';
 import ProjectCard from '@/components/dashboard/ProjectCard';
 import SearchInput from '@/components/ui/SearchInput';
 import FilterSelect from '@/components/ui/FilterSelect';
@@ -22,8 +22,9 @@ export default function ProjectsPage() {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('All');
   const [modalOpen, setModalOpen] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [createError, setCreateError] = useState('');
+  const [editingProject, setEditingProject] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const [saveError, setSaveError] = useState('');
   const [aiProject, setAiProject] = useState(null);
 
   const withStats = useMemo(() => {
@@ -39,17 +40,44 @@ export default function ProjectsPage() {
     });
   }, [withStats, search, statusFilter]);
 
-  const handleCreate = async (formData) => {
-    setCreateError('');
-    setCreating(true);
+  const openCreateModal = () => {
+    setEditingProject(null);
+    setSaveError('');
+    setModalOpen(true);
+  };
+
+  const openEditModal = (project) => {
+    setEditingProject(project);
+    setSaveError('');
+    setModalOpen(true);
+  };
+
+  const handleSave = async (formData) => {
+    setSaveError('');
+    setSaving(true);
     try {
-      await createProject(formData);
+      if (editingProject) {
+        await updateProject(editingProject.id, formData);
+      } else {
+        await createProject(formData);
+      }
       setModalOpen(false);
       retry();
     } catch (err) {
-      setCreateError(err.message);
+      setSaveError(err.message);
     } finally {
-      setCreating(false);
+      setSaving(false);
+    }
+  };
+
+  const handleDelete = async (project) => {
+    if (!window.confirm(`Delete "${project.name}"? This will also delete all its tasks.`)) return;
+    try {
+      await deleteProject(project.id);
+      retry();
+      tasksState.retry();
+    } catch (err) {
+      alert(err.message);
     }
   };
 
@@ -66,7 +94,7 @@ export default function ProjectsPage() {
           <p className="text-sm text-slate-500">All the projects you&apos;re currently tracking.</p>
         </div>
         <button
-          onClick={() => setModalOpen(true)}
+          onClick={openCreateModal}
           className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white rounded-lg bg-cyan-600 hover:bg-cyan-700"
         >
           <Plus className="w-4 h-4" />
@@ -99,7 +127,13 @@ export default function ProjectsPage() {
       {status === 'success' && filtered.length > 0 && (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((project) => (
-            <ProjectCard key={project.id} project={project} onGenerateTasks={setAiProject} />
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onGenerateTasks={setAiProject}
+              onEdit={openEditModal}
+              onDelete={handleDelete}
+            />
           ))}
         </div>
       )}
@@ -107,9 +141,10 @@ export default function ProjectsPage() {
       <NewProjectModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onCreate={handleCreate}
-        loading={creating}
-        error={createError}
+        onSave={handleSave}
+        loading={saving}
+        error={saveError}
+        project={editingProject}
       />
 
       <GenerateTasksModal

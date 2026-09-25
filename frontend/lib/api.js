@@ -85,3 +85,7 @@ export function deleteTask(id) {
 export function generateTasks(projectId) {
   return request('/ai/generate-tasks', { method: 'POST', body: JSON.stringify({ projectId }) });
 }
+
+export function updateMe(data) {
+  return request('/auth/me', { method: 'PUT', body: JSON.stringify(data) });
+}

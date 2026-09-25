@@ -36,3 +36,15 @@ exports.login = asyncHandler(async (req, res, next) => {
 exports.getMe = asyncHandler(async (req, res) => {
   res.status(200).json(req.user);
 });
+
+exports.updateMe = asyncHandler(async (req, res, next) => {
+  const { name, email, role, bio } = req.body;
+
+  if (email && email !== req.user.email) {
+    const existing = await userModel.findByEmail(email);
+    if (existing) return next(new AppError('A user with this email already exists.', 409));
+  }
+
+  const updated = await userModel.update(req.user.id, { name, email, role, bio });
+  res.status(200).json(updated);
+});
